@@ -1,0 +1,5 @@
+rpc_user: "btcuser"
+rpc_password: "btcpass"
+rpc_port: 8332
+rpc_host: "localhost"
+exp_url: "https://blockchain.info/q/getblockcount"
