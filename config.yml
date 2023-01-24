@@ -1,5 +1,8 @@
-rpc_user: "btcuser"
-rpc_password: "btcpass"
-rpc_port: 8332
-rpc_host: "localhost"
-exp_url: "https://blockchain.info/q/getblockcount"
+RPC_USER: "btcuser"
+RPC_PASSWORD: "btcpass"
+RPC_PORT: 8332
+RPC_HOST: "localhost"
+EXP_URL: "https://blockchain.info/q/getblockcount"
+RETRY_MAX_COUNT: 3
+RETRY_WAIT_TIME: 5
+WEBHOOK_URL: "https://hooks.slack.com/services/xxxxxxxxx"
