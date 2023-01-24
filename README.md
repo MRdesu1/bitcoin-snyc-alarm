@@ -1,4 +1,4 @@
-# bitcoin-snyc-alarm
+# bitcoin-snyc-alerm
 
 ## 目的
 Bitcoinノードの最新ブロックと、Explorerの最新ブロックのブロック差分（以下 Diffとする）を監視するスクリプト。ネットワークは、Mainnet。
