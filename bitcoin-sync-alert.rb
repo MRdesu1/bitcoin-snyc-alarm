@@ -29,7 +29,7 @@ def exec_block_diff(node_height,exp_height)
   if diff.abs >= 3
     return "NG! Node:" + node_height.to_s + " explorer:" + exp_height.to_s
   else
-    return "OK! Node:" + node_height.to_s + " explorer:" + exp_height.to_s
+    return "OK"
   end
 end
 
@@ -43,9 +43,11 @@ def post_slack(webhook_url,alert_message)
   response = http.request(req)
 end
 
-config = YAML.load_file("config.yml")
+config_file = ENV['HOME'] + "/bitcoin-sync-alerm/config.yml"
+config = YAML.load_file(config_file)
 node_height = get_last_block_from_node(config["RPC_HOST"],config["RPC_USER"],config["RPC_PASSWORD"],config["RPC_PORT"])
 exp_height = get_last_block_from_explorer(config["EXP_URL"])
 diff_result = exec_block_diff(node_height,exp_height)
-post_slack(config["WEBHOOK_URL"],diff_result)
-
+if diff_result != "OK"
+  post_slack(config["WEBHOOK_URL"],diff_result)
+end
