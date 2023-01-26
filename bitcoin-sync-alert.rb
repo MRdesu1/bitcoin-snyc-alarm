@@ -52,10 +52,10 @@ def get_last_block_from_explorer(explorer_url)
 end
 
 
-def exec_block_diff(node_height,exp_height)
+def exec_block_diff(node_height,exp_height,interval_threshold)
   diff = node_height - exp_height
   # ブロック差異が3以上の場合はエラーとする
-  if diff.abs >= 3
+  if diff.abs >= interval_threshold
     return "NG! Node:" + node_height.to_s + " explorer:" + exp_height.to_s
   else
     return "OK"
@@ -75,7 +75,7 @@ end
 
 node_height = get_last_block_from_node(config["RPC_HOST"],config["RPC_USER"],config["RPC_PASSWORD"],config["RPC_PORT"])
 exp_height = get_last_block_from_explorer(config["EXP_URL"])
-diff_result = exec_block_diff(node_height,exp_height)
+diff_result = exec_block_diff(node_height,exp_height,config["INTERVAL_THRESHOLD"])
 if diff_result != "OK"
   post_slack(config["WEBHOOK_URL"],diff_result)
 end
