@@ -3,6 +3,11 @@ require 'net/http'
 require 'uri'
 require 'yaml'
 
+config_file = ENV['HOME'] + "/bitcoin-sync-alerm/config.yml"
+config = YAML.load_file(config_file)
+
+RETRY_MAX_COUNT=config["RETRY_MAX_COUNT"]
+RETRY_WAIT_TIME=config["RETRY_WAIT_TIME"]
 
 # ノードからheightを取得
 def get_last_block_from_node(rpc_host,rpc_user,rpc_password,rpc_port)
@@ -12,16 +17,40 @@ def get_last_block_from_node(rpc_host,rpc_user,rpc_password,rpc_port)
   req.basic_auth rpc_user, rpc_password
   req.content_type = 'application/json'
   req.body = { jsonrpc: '2.0', method: 'getblockcount' }.to_json
-  response = http.request(req)
-
+  retry_count = 0
+  begin
+    response = http.request(req)
+  rescue => e
+    if retry_count < RETRY_MAX_COUNT
+      sleep RETRY_WAIT_TIME
+      puts "NODE retry count: #{retry_count += 1}"
+      retry
+    else
+      puts e.message
+      exit
+    end
+  end
   return JSON.parse(response.body)["result"].to_i
 end
 
 # エクスプローラーサイトからheightを取得
 def get_last_block_from_explorer(explorer_url)
-  res = Net::HTTP.get(URI(explorer_url))
+  retry_count = 0
+  begin
+    res = Net::HTTP.get(URI(explorer_url))
+  rescue => e
+    if retry_count < RETRY_MAX_COUNT
+      sleep RETRY_WAIT_TIME
+      puts "EXPLORER retry count: #{retry_count += 1}"
+      retry
+    else
+      puts e.message
+      exit
+    end
+  end
   return res.to_i
 end
+
 
 def exec_block_diff(node_height,exp_height)
   diff = node_height - exp_height
@@ -43,8 +72,7 @@ def post_slack(webhook_url,alert_message)
   response = http.request(req)
 end
 
-config_file = ENV['HOME'] + "/bitcoin-sync-alerm/config.yml"
-config = YAML.load_file(config_file)
+
 node_height = get_last_block_from_node(config["RPC_HOST"],config["RPC_USER"],config["RPC_PASSWORD"],config["RPC_PORT"])
 exp_height = get_last_block_from_explorer(config["EXP_URL"])
 diff_result = exec_block_diff(node_height,exp_height)
