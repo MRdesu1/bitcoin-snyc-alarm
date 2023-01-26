@@ -21,3 +21,42 @@ https://github.com/bitcoin/bitcoin/releases/tag/v24.0.1
 ### Ruby
 ruby 3.1.3p185
 
+## 使い方
+### bitcoin core
+bitcoin/bitcoin.confを参考にbitcoindをmainnetに構築してください
+
+### 設定
+本リポジトリのクローン
+```
+cd ~
+git clone https://github.com/MRdesu1/bitcoin-snyc-alarm.git
+```
+
+config.yml以下を適宜設定してください。
+```
+RPC_USER: "bitcoin.conf記載のrpcuserと同じもの"
+RPC_PASSWORD: "bitcoin.conf記載のrpcpasswordと同じもの"
+RPC_PORT: bitcoin.conf記載の[main]部分のportと同じもの
+RPC_HOST: bitcoin coreを起動したサーバのIP
+WEBHOOK_URL: 事前にWEBHOOK_URLを取得してください
+```
+
+### 起動設定
+以下を例にcronを設定してください。
+設定例
+```
+*/10 * * * * ruby $HOME/bitcoin-sync-alerm/bitcoin-sync-alerm.rb
+```
+ ※例ではbitcoinのブロック生成時間に合わせて10分間隔での通知としています。
+
+
+
+## その他
++ エクスプローラーサイトのAPIは以下を参照
+https://www.blockchain.com/explorer/api/q
+
++ ノードやエクスプローラーサイトへの問い合わせに関しては通信の瞬断の可能性を考慮してリトライ処理を入れています。
+
++ Slack通知はgem（slack-notifierなど）を利用したほうが簡単かと思いましたが、セキュリティ上余計なgemを入れないように単純にwebhookをたたくだけとしています。
+
+# 以上
