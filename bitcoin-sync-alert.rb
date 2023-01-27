@@ -51,10 +51,10 @@ def get_last_block_from_explorer(explorer_url)
   return res.to_i
 end
 
-
+# ブロック数の差異比較
 def exec_block_diff(node_height,exp_height,interval_threshold)
   diff = node_height - exp_height
-  # ブロック差異が3以上の場合はエラーとする
+  # ブロック差異がinterval_threshold以上の場合はエラーとする
   if diff.abs >= interval_threshold
     return "NG! Node:" + node_height.to_s + " explorer:" + exp_height.to_s
   else
@@ -62,6 +62,7 @@ def exec_block_diff(node_height,exp_height,interval_threshold)
   end
 end
 
+# Slackへの通知
 def post_slack(webhook_url,alert_message)
   uri = URI("#{webhook_url}")
   http = Net::HTTP.new(uri.host, uri.port)
